@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberPath Pro - Find Your Cybersecurity Career</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .option-card {
+            transition: all 0.3s ease;
+        }
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+        .role-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="text-gray-100">
+    <!-- Name Input Section -->
+    <section id="name-section" class="min-h-screen flex items-center justify-center fade-in">
+        <div class="max-w-md w-full bg-slate-800 rounded-2xl shadow-2xl p-8">
+            <div class="text-center mb-8">
+                <i class="fas fa-shield-alt text-5xl text-cyan-400 mb-4 pulse"></i>
+                <h1 class="text-3xl font-bold">CyberPath Pro</h1>
+                <p class="text-slate-400 mt-2">Advanced Cybersecurity Career Assessment</p>
+            </div>
+            <div class="mb-6">
+                <label for="name" class="block text-sm font-medium text-slate-300 mb-2">Enter your name</label>
+                <input type="text" id="name" placeholder="Your name" class="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500">
+            </div>
+            <button id="start-btn" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-medium py-3 rounded-lg transition duration-300 transform hover:scale-105">
+                Start Advanced Assessment
+            </button>
+        </div>
+    </section>
+
+    <!-- Quiz Section -->
+    <section id="quiz-section" class="min-h-screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-2">
+                    <span id="question-counter" class="text-slate-400">Question 1 of 30</span>
+                    <span id="timer" class="text-slate-400">Time: 0:00</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-gradient-to-r from-cyan-600 to-blue-600 h-2.5 rounded-full progress-bar" style="width: 3.33%"></div>
+                </div>
+            </div>
+            
+            <div id="question-container" class="bg-slate-800 rounded-2xl p-8 mb-8 slide-in">
+                <h2 id="question-text" class="text-2xl font-semibold mb-8 text-center"></h2>
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+            
+            <div class="flex justify-between">
+                <button id="prev-btn" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition duration-300 hidden">
+                    <i class="fas fa-arrow-left mr-2"></i>Previous
+                </button>
+                <button id="next-btn" class="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 rounded-lg transition duration-300 ml-auto">
+                    Next<i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results-section" class="min-h-screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div id="results-content" class="text-center slide-in">
+                <!-- Results will be dynamically inserted here -->
+            </div>
+            
+            <div id="roadmap-container" class="mt-12 hidden">
+                <h2 class="text-2xl font-bold mb-6 text-center">Your Personalized 30-Day Learning Roadmap</h2>
+                <div id="roadmap-content" class="bg-slate-800 rounded-2xl p-6">
+                    <!-- Roadmap will be dynamically inserted here -->
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button id="restart-btn" class="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 rounded-lg transition duration-300">
+                    <i class="fas fa-redo mr-2"></i>Retake Assessment
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Enhanced Quiz Data with weighted scoring
+        const quizData = [
+            { 
+                q: "When facing a problem, do you prefer to think creatively or systematically?", 
+                a: { 
+                    Red: { text: "Creatively - exploring unconventional solutions", weight: 2 },
+                    Blue: { text: "Systematically - following a structured approach", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more interested in finding vulnerabilities or fixing them?", 
+                a: { 
+                    Red: { text: "Finding vulnerabilities", weight: 3 },
+                    Blue: { text: "Fixing vulnerabilities", weight: 3 }
+                } 
+            },
+            { 
+                q: "Do you prefer working reactively or proactively?", 
+                a: { 
+                    IR: { text: "Reactively - responding to incidents as they happen", weight: 2 },
+                    Blue: { text: "Proactively - preventing incidents before they occur", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more fascinated by how software works or how networks operate?", 
+                a: { 
+                    AppSec: { text: "How software works", weight: 2 },
+                    NetworkSec: { text: "How networks operate", weight: 2 }
+                } 
+            },
+            { 
+                q: "Do you enjoy analyzing code or analyzing network traffic?", 
+                a: { 
+                    AppSec: { text: "Analyzing code", weight: 2 },
+                    NetworkSec: { text: "Analyzing network traffic", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more interested in web applications or operating systems?", 
+                a: { 
+                    WebPentest: { text: "Web applications", weight: 2 },
+                    Forensics: { text: "Operating systems", weight: 2 }
+                } 
+            },
+            { 
+                q: "Do you prefer working with high-level programming or low-level assembly?", 
+                a: { 
+                    DevSecOps: { text: "High-level programming", weight: 2 },
+                    ReverseEng: { text: "Low-level assembly", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more drawn to automation tools or manual analysis?", 
+                a: { 
+                    DevSecOps: { text: "Automation tools", weight: 2 },
+                    Forensics: { text: "Manual analysis", weight: 2 }
+                } 
+            },
+            { 
+                q: "Do you enjoy puzzle-solving or following established procedures?", 
+                a: { 
+                    ReverseEng: { text: "Puzzle-solving", weight: 3 },
+                    IR: { text: "Following established procedures", weight: 3 }
+                } 
+            },
+            { 
+                q: "Are you more interested in preventing attacks or responding to them?", 
+                a: { 
+                    Blue: { text: "Preventing attacks", weight: 3 },
+                    IR: { text: "Responding to attacks", weight: 3 }
+                } 
+            },
+            { 
+                q: "Do you prefer working alone or as part of a team?", 
+                a: { 
+                    Red: { text: "Working alone", weight: 1 },
+                    Blue: { text: "Working as part of a team", weight: 1 }
+                } 
+            },
+            { 
+                q: "Are you more comfortable with command line or graphical interfaces?", 
+                a: { 
+                    Red: { text: "Command line", weight: 1 },
+                    Blue: { text: "Graphical interfaces", weight: 1 }
+                } 
+            },
+            { 
+                q: "Do you enjoy creating security tools or using existing ones?", 
+                a: { 
+                    AppSec: { text: "Creating security tools", weight: 2 },
+                    WebPentest: { text: "Using existing tools", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more interested in cloud security or on-premise security?", 
+                a: { 
+                    DevSecOps: { text: "Cloud security", weight: 2 },
+                    NetworkSec: { text: "On-premise security", weight: 2 }
+                } 
+            },
+            { 
+                q: "Do you prefer documenting processes or testing limits?", 
+                a: { 
+                    Blue: { text: "Documenting processes", weight: 2 },
+                    Red: { text: "Testing limits", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more drawn to cryptography or malware analysis?", 
+                a: { 
+                    AppSec: { text: "Cryptography", weight: 2 },
+                    ReverseEng: { text: "Malware analysis", weight: 2 }
+                } 
+            },
+            { 
+                q: "Do you enjoy reading logs or writing scripts?", 
+                a: { 
+                    IR: { text: "Reading logs", weight: 2 },
+                    DevSecOps: { text: "Writing scripts", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more interested in mobile security or IoT security?", 
+                a: { 
+                    AppSec: { text: "Mobile security", weight: 2 },
+                    NetworkSec: { text: "IoT security", weight: 2 }
+                } 
+            },
+            { 
+                q: "Do you prefer structured methodologies or creative approaches?", 
+                a: { 
+                    Blue: { text: "Structured methodologies", weight: 2 },
+                    Red: { text: "Creative approaches", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more comfortable with Windows or Linux environments?", 
+                a: { 
+                    Forensics: { text: "Windows environments", weight: 1 },
+                    WebPentest: { text: "Linux environments", weight: 1 }
+                } 
+            },
+            { 
+                q: "Do you enjoy teaching security concepts or discovering new vulnerabilities?", 
+                a: { 
+                    Blue: { text: "Teaching security concepts", weight: 2 },
+                    Red: { text: "Discovering new vulnerabilities", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more interested in data protection or access control?", 
+                a: { 
+                    AppSec: { text: "Data protection", weight: 2 },
+                    NetworkSec: { text: "Access control", weight: 2 }
+                } 
+            },
+            { 
+                q: "Do you prefer working on short-term projects or long-term strategies?", 
+                a: { 
+                    IR: { text: "Short-term projects", weight: 2 },
+                    Blue: { text: "Long-term strategies", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more drawn to social engineering or technical exploitation?", 
+                a: { 
+                    Red: { text: "Social engineering", weight: 2 },
+                    WebPentest: { text: "Technical exploitation", weight: 2 }
+                } 
+            },
+            { 
+                q: "Do you enjoy reverse engineering software or designing secure architecture?", 
+                a: { 
+                    ReverseEng: { text: "Reverse engineering software", weight: 3 },
+                    DevSecOps: { text: "Designing secure architecture", weight: 3 }
+                } 
+            },
+            { 
+                q: "Are you more interested in incident response or threat hunting?", 
+                a: { 
+                    IR: { text: "Incident response", weight: 3 },
+                    Blue: { text: "Threat hunting", weight: 3 }
+                } 
+            },
+            { 
+                q: "Do you prefer working with firewalls or intrusion detection systems?", 
+                a: { 
+                    NetworkSec: { text: "Firewalls", weight: 2 },
+                    Blue: { text: "Intrusion detection systems", weight: 2 }
+                } 
+            },
+            { 
+                q: "Are you more comfortable with risk assessment or vulnerability assessment?", 
+                a: { 
+                    Blue: { text: "Risk assessment", weight: 2 },
+                    Red: { text: "Vulnerability assessment", weight: 2 }
+                } 
+            },
+            { 
+                q: "Do you enjoy digital forensics or network forensics?", 
+                a: { 
+                    Forensics: { text: "Digital forensics", weight: 3 },
+                    NetworkSec: { text: "Network forensics", weight: 3 }
+                } 
+            },
+            { 
+                q: "Are you more interested in security compliance or security testing?", 
+                a: { 
+                    Blue: { text: "Security compliance", weight: 2 },
+                    Red: { text: "Security testing", weight: 2 }
+                } 
+            }
+        ];
+
+        // Enhanced Role Information
+        const roles = {
+            Red: {
+                name: "Red Team / Penetration Tester",
+                description: "You're a natural attacker who enjoys finding weaknesses before malicious actors do. Red Team professionals simulate real-world attacks to test an organization's defenses. This role requires creativity, persistence, and deep technical knowledge across multiple domains.",
+                icon: "fa-bug",
+                color: "text-red-400",
+                skills: ["Vulnerability Assessment", "Exploitation", "Social Engineering", "Lateral Movement"],
+                personality: "Creative, Curious, Persistent, Problem-Solver"
+            },
+            Blue: {
+                name: "Blue Team / Security Analyst",
+                description: "You're a defender at heart, focused on protecting systems and data. Blue Team professionals work to detect, prevent, and respond to cyber threats. This role requires attention to detail, systematic thinking, and a comprehensive understanding of security controls.",
+                icon: "fa-shield-alt",
+                color: "text-blue-400",
+                skills: ["Threat Detection", "SIEM Management", "Incident Response", "Security Controls"],
+                personality: "Analytical, Methodical, Vigilant, Team Player"
+            },
+            IR: {
+                name: "Incident Responder",
+                description: "You thrive under pressure and enjoy being the first responder to security incidents. Incident Responders contain threats and restore normal operations quickly. This role requires calm decision-making, technical expertise, and excellent communication skills.",
+                icon: "fa-ambulance",
+                color: "text-orange-400",
+                skills: ["Incident Handling", "Forensics", "Containment", "Communication"],
+                personality: "Calm Under Pressure, Decisive, Communicative, Technical"
+            },
+            AppSec: {
+                name: "Application Security Engineer",
+                description: "You love code and ensuring it's secure from the ground up. AppSec professionals integrate security into the software development lifecycle. This role requires deep programming knowledge and an understanding of security principles.",
+                icon: "fa-code",
+                color: "text-green-400",
+                skills: ["Secure Coding", "Code Review", "SAST/DAST", "SDLC Security"],
+                personality: "Detail-Oriented, Technical, Collaborative, Quality-Focused"
+            },
+            NetworkSec: {
+                name: "Network Security Specialist",
+                description: "You're fascinated by how data moves and how to protect it in transit. Network Security professionals design and maintain secure network infrastructures. This role requires strong networking knowledge and understanding of security protocols.",
+                icon: "fa-network-wired",
+                color: "text-purple-400",
+                skills: ["Firewall Management", "Network Monitoring", "VPNs", "IDS/IPS"],
+                personality: "Structured, Technical, Analytical, Infrastructure-Focused"
+            },
+            WebPentest: {
+                name: "Web Application Penetration Tester",
+                description: "You enjoy hunting for vulnerabilities in web applications and APIs. Web Pentesters specialize in finding and exploiting web-specific security flaws. This role requires knowledge of web technologies and creative testing approaches.",
+                icon: "fa-globe",
+                color: "text-yellow-400",
+                skills: ["Web Vulnerabilities", "OWASP Top 10", "API Testing", "Burp Suite"],
+                personality: "Curious, Technical, Methodical, Web-Focused"
+            },
+            DevSecOps: {
+                name: "DevSecOps Engineer",
+                description: "You bridge the gap between development and security, automating security processes. DevSecOps professionals integrate security into CI/CD pipelines. This role requires knowledge of both development and security practices.",
+                icon: "fa-robot",
+                color: "text-cyan-400",
+                skills: ["CI/CD Security", "Container Security", "Automation", "Cloud Security"],
+                personality: "Automation-Focused, Collaborative, Technical, Process-Oriented"
+            },
+            Forensics: {
+                name: "Digital Forensics Analyst",
+                description: "You're a digital detective who loves piecing together evidence from cyber incidents. Forensics analysts recover and analyze digital evidence. This role requires patience, attention to detail, and methodical approaches.",
+                icon: "fa-search",
+                color: "text-indigo-400",
+                skills: ["Evidence Collection", "Data Recovery", "Timeline Analysis", "Legal Procedures"],
+                personality: "Detail-Oriented, Patient, Methodical, Investigative"
+            },
+            ReverseEng: {
+                name: "Reverse Engineering Specialist",
+                description: "You enjoy taking things apart to understand how they work, especially malware. Reverse Engineers analyze malicious code to understand its functionality. This role requires deep technical knowledge and persistence.",
+                icon: "fa-cogs",
+                color: "text-pink-400",
+                skills: ["Assembly Language", "Debugging", "Malware Analysis", "Binary Analysis"],
+                personality: "Technical, Persistent, Analytical, Problem-Solver"
+            }
+        };
+
+        // Enhanced Roadmaps for each role
+        const roadmaps = {
+            Red: [
+                "Day 1-3: Networking fundamentals - TCP/IP, DNS, HTTP, subnetting",
+                "Day 4-6: Linux command line mastery and basic scripting",
+                "Day 7-9: Information gathering techniques (OSINT, scanning)",
+                "Day 10-12: Vulnerability assessment tools and methodologies",
+                "Day 13-15: Web application penetration testing basics",
+                "Day 16-18: Privilege escalation and post-exploitation techniques",
+                "Day 19-21: Active Directory attacks and lateral movement",
+                "Day 22-24: Wireless and network penetration testing",
+                "Day 25-27: Advanced exploitation and custom tool development",
+                "Day 28-30: Practice on HackTheBox, TryHackMe, and report writing"
+            ],
+            Blue: [
+                "Day 1-3: Networking protocols and security controls",
+                "Day 4-6: Operating system security and hardening",
+                "Day 7-9: Security policies, procedures, and compliance",
+                "Day 10-12: SIEM tools and log analysis fundamentals",
+                "Day 13-15: Intrusion detection and prevention systems",
+                "Day 16-18: Threat intelligence and indicator management",
+                "Day 19-21: Endpoint protection and monitoring",
+                "Day 22-24: Security automation and orchestration",
+                "Day 25-27: Threat hunting methodologies and techniques",
+                "Day 28-30: Incident response preparation and tabletop exercises"
+            ],
+            IR: [
+                "Day 1-3: Incident response lifecycle and frameworks",
+                "Day 4-6: Digital forensics fundamentals and tools",
+                "Day 7-9: Evidence collection, preservation, and chain of custody",
+                "Day 10-12: Malware analysis basics and sandboxing",
+                "Day 13-15: Network forensics and traffic analysis",
+                "Day 16-18: Memory forensics and volatile data collection",
+                "Day 19-21: Containment strategies and eradication techniques",
+                "Day 22-24: Recovery procedures and business continuity",
+                "Day 25-27: Incident reporting and communication strategies",
+                "Day 28-30: Advanced incident handling and simulation exercises"
+            ],
+            AppSec: [
+                "Day 1-3: Secure coding principles and OWASP Top 10",
+                "Day 4-6: Input validation and authentication mechanisms",
+                "Day 7-9: Session management and access control",
+                "Day 10-12: Cryptography basics and data protection",
+                "Day 13-15: API security and web services protection",
+                "Day 16-18: SAST tools and secure code review techniques",
+                "Day 19-21: DAST tools and dynamic application testing",
+                "Day 22-24: Mobile application security and testing",
+                "Day 25-27: DevSecOps integration and automation",
+                "Day 28-30: Threat modeling and security architecture"
+            ],
+            NetworkSec: [
+                "Day 1-3: Advanced TCP/IP and network protocols",
+                "Day 4-6: Network architecture and segmentation strategies",
+                "Day 7-9: Firewall technologies and configuration",
+                "Day 10-12: VPN technologies and secure remote access",
+                "Day 13-15: Intrusion detection and prevention systems",
+                "Day 16-18: Network monitoring and traffic analysis",
+                "Day 19-21: Wireless security protocols and implementation",
+                "Day 22-24: Cloud network security and SD-WAN",
+                "Day 25-27: Zero Trust architecture and implementation",
+                "Day 28-30: Network penetration testing and defense"
+            ],
+            WebPentest: [
+                "Day 1-3: HTTP protocol and web application architecture",
+                "Day 4-6: Browser developer tools and proxy usage",
+                "Day 7-9: OWASP Top 10 deep dive and testing methodologies",
+                "Day 10-12: SQL injection and database security testing",
+                "Day 13-15: Cross-site scripting (XSS) and client-side attacks",
+                "Day 16-18: Authentication and session management testing",
+                "Day 19-21: API security testing and business logic flaws",
+                "Day 22-24: Advanced web attacks and WAF bypass techniques",
+                "Day 25-27: Mobile web application security testing",
+                "Day 28-30: Bug bounty methodologies and report writing"
+            ],
+            DevSecOps: [
+                "Day 1-3: DevOps principles and CI/CD pipeline fundamentals",
+                "Day 4-6: Infrastructure as Code (IaC) security",
+                "Day 7-9: Container security and Docker best practices",
+                "Day 10-12: Kubernetes security and orchestration",
+                "Day 13-15: Cloud security principles and implementation",
+                "Day 16-18: Security testing integration in CI/CD",
+                "Day 19-21: Secrets management and secure configurations",
+                "Day 22-24: Compliance as code and policy enforcement",
+                "Day 25-27: Security monitoring and observability",
+                "Day 28-30: Building a DevSecOps culture and automation"
+            ],
+            Forensics: [
+                "Day 1-3: Digital forensics fundamentals and legal aspects",
+                "Day 4-6: Disk imaging and file system analysis",
+                "Day 7-9: Windows registry analysis and artifact extraction",
+                "Day 10-12: Timeline analysis and event correlation",
+                "Day 13-15: Memory forensics and volatile data analysis",
+                "Day 16-18: Network forensics and packet analysis",
+                "Day 19-21: Mobile device forensics and data extraction",
+                "Day 22-24: Cloud forensics and virtual environment analysis",
+                "Day 25-27: Anti-forensics detection and advanced techniques",
+                "Day 28-30: Forensic reporting and expert testimony preparation"
+            ],
+            ReverseEng: [
+                "Day 1-3: Computer architecture and assembly language basics",
+                "Day 4-6: x86/x64 architecture and instruction sets",
+                "Day 7-9: Disassemblers, debuggers, and analysis tools",
+                "Day 10-12: PE and ELF file format analysis",
+                "Day 13-15: Static analysis techniques and pattern recognition",
+                "Day 16-18: Dynamic analysis and runtime behavior",
+                "Day 19-21: Malware unpacking and obfuscation techniques",
+                "Day 22-24: API monitoring and function hooking",
+                "Day 25-27: Advanced malware analysis and classification",
+                "Day 28-30: Vulnerability discovery and exploit development"
+            ]
+        };
+
+        // DOM Elements
+        const nameSection = document.getElementById('name-section');
+        const quizSection = document.getElementById('quiz-section');
+        const resultsSection = document.getElementById('results-section');
+        const startBtn = document.getElementById('start-btn');
+        const nameInput = document.getElementById('name');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const resultsContent = document.getElementById('results-content');
+        const roadmapContainer = document.getElementById('roadmap-container');
+        const roadmapContent = document.getElementById('roadmap-content');
+        const restartBtn = document.getElementById('restart-btn');
+        const timerElement = document.getElementById('timer');
+
+        // Quiz State
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let userName = '';
+        let startTime;
+        let timerInterval;
+
+        // Initialize the quiz
+        function initQuiz() {
+            userName = nameInput.value.trim();
+            if (!userName) {
+                alert('Please enter your name to continue.');
+                return;
+            }
+            
+            // Hide name section, show quiz section
+            nameSection.classList.add('hidden');
+            quizSection.classList.remove('hidden');
+            
+            // Initialize answers array
+            userAnswers = new Array(quizData.length).fill(null);
+            
+            // Start timer
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            // Load first question
+            loadQuestion(currentQuestion);
+        }
+
+        // Update timer display
+        function updateTimer() {
+            const now = new Date();
+            const diff = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+            timerElement.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Load a question
+        function loadQuestion(index) {
+            // Update question counter and progress bar
+            questionCounter.textContent = `Question ${index + 1} of ${quizData.length}`;
+            progressBar.style.width = `${((index + 1) / quizData.length) * 100}%`;
+            
+            // Update navigation buttons
+            prevBtn.classList.toggle('hidden', index === 0);
+            nextBtn.textContent = index === quizData.length - 1 ? 'See Results' : 'Next';
+            
+            // Set question text
+            questionText.textContent = quizData[index].q;
+            
+            // Clear options container
+            optionsContainer.innerHTML = '';
+            
+            // Create option buttons
+            const options = quizData[index].a;
+            Object.keys(options).forEach(role => {
+                const optionData = options[role];
+                const optionDiv = document.createElement('div');
+                optionDiv.className = `option-card bg-slate-700 p-4 rounded-xl cursor-pointer transition-all duration-300 hover:bg-slate-600 ${userAnswers[index] === role ? 'glow' : ''}`;
+                optionDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full border-2 ${userAnswers[index] === role ? 'border-cyan-400' : 'border-slate-400'} flex items-center justify-center mr-3">
+                            ${userAnswers[index] === role ? '<i class="fas fa-check text-cyan-400"></i>' : ''}
+                        </div>
+                        <span>${optionData.text}</span>
+                    </div>
+                `;
+                
+                optionDiv.addEventListener('click', () => {
+                    userAnswers[index] = role;
+                    loadQuestion(currentQuestion); // Reload to update selection
+                });
+                
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            // Add animation
+            questionText.classList.remove('slide-in');
+            void questionText.offsetWidth; // Trigger reflow
+            questionText.classList.add('slide-in');
+        }
+
+        // Navigate to previous question
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion(currentQuestion);
+            }
+        }
+
+        // Navigate to next question or show results
+        function nextQuestion() {
+            if (userAnswers[currentQuestion] === null) {
+                alert('Please select an answer before continuing.');
+                return;
+            }
+            
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                loadQuestion(currentQuestion);
+            } else {
+                showResults();
+            }
+        }
+
+        // Calculate and display results
+        function showResults() {
+            // Stop timer
+            clearInterval(timerInterval);
+            
+            // Calculate scores with weights
+            const scores = {};
+            Object.keys(roles).forEach(role => {
+                scores[role] = 0;
+            });
+            
+            userAnswers.forEach((answer, index) => {
+                if (answer) {
+                    const weight = quizData[index].a[answer].weight;
+                    scores[answer] += weight;
+                }
+            });
+            
+            // Find highest scoring role(s)
+            let maxScore = 0;
+            let topRoles = [];
+            
+            Object.keys(scores).forEach(role => {
+                if (scores[role] > maxScore) {
+                    maxScore = scores[role];
+                    topRoles = [role];
+                } else if (scores[role] === maxScore) {
+                    topRoles.push(role);
+                }
+            });
+            
+            // Hide quiz section, show results section
+            quizSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            
+            // Display results
+            if (topRoles.length === 1) {
+                // Single top role
+                const role = topRoles[0];
+                displayRoleResult(role, scores);
+            } else {
+                // Tie - let user choose
+                displayTieResults(topRoles, scores);
+            }
+        }
+
+        // Display result for a single role
+        function displayRoleResult(roleKey, scores) {
+            const role = roles[roleKey];
+            const score = scores[roleKey];
+            const maxPossible = 60; // Maximum possible score
+            
+            resultsContent.innerHTML = `
+                <div class="bg-slate-800 rounded-2xl p-8 mb-8">
+                    <div class="text-center mb-6">
+                        <i class="${role.icon} role-icon ${role.color} pulse"></i>
+                        <h2 class="text-3xl font-bold mb-2">Congratulations, ${userName}!</h2>
+                        <p class="text-slate-300 text-lg">Your cybersecurity career match is:</p>
+                    </div>
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-semibold ${role.color} mb-4">${role.name}</h3>
+                        <div class="inline-block bg-slate-700 px-4 py-2 rounded-full mb-4">
+                            <span class="text-cyan-400 font-semibold">Match Score: ${score}/${maxPossible}</span>
+                        </div>
+                        <p class="text-slate-300 max-w-2xl mx-auto mb-6">${role.description}</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                        <div class="bg-slate-700 p-4 rounded-lg">
+                            <h4 class="font-semibold text-cyan-400 mb-2">Key Skills</h4>
+                            <ul class="text-sm text-slate-300">
+                                ${role.skills.map(skill => `<li class="mb-1"><i class="fas fa-check text-green-400 mr-2"></i>${skill}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="bg-slate-700 p-4 rounded-lg">
+                            <h4 class="font-semibold text-cyan-400 mb-2">Personality Fit</h4>
+                            <p class="text-sm text-slate-300">${role.personality}</p>
+                        </div>
+                    </div>
+                </div>
+                <button id="show-roadmap" class="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 rounded-lg transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-map mr-2"></i>View Your Personalized 30-Day Roadmap
+                </button>
+            `;
+            
+            document.getElementById('show-roadmap').addEventListener('click', () => {
+                displayRoadmap(roleKey);
+            });
+        }
+
+        // Display tie results and let user choose
+        function displayTieResults(roleKeys, scores) {
+            resultsContent.innerHTML = `
+                <div class="bg-slate-800 rounded-2xl p-8 mb-8">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-trophy text-3xl text-yellow-400 mb-4 pulse"></i>
+                        <h2 class="text-3xl font-bold mb-2">Close Call, ${userName}!</h2>
+                        <p class="text-slate-300 text-lg">You're equally suited for multiple roles. Choose your path:</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+                        ${roleKeys.map(roleKey => {
+                            const role = roles[roleKey];
+                            const score = scores[roleKey];
+                            return `
+                                <div class="option-card bg-slate-700 p-4 rounded-xl cursor-pointer transition-all duration-300 hover:bg-slate-600" data-role="${roleKey}">
+                                    <div class="text-center mb-3">
+                                        <i class="${role.icon} text-2xl ${role.color} mb-2"></i>
+                                        <h3 class="font-semibold">${role.name}</h3>
+                                        <div class="text-xs bg-slate-600 inline-block px-2 py-1 rounded-full mt-1">
+                                            Score: ${score}/60
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-slate-400">${role.description.substring(0, 120)}...</p>
+                                    <div class="mt-3">
+                                        <span class="text-xs text-cyan-400">Key skills: ${role.skills.slice(0, 2).join(', ')}</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners to role options
+            document.querySelectorAll('.option-card[data-role]').forEach(card => {
+                card.addEventListener('click', () => {
+                    const roleKey = card.getAttribute('data-role');
+                    displayRoleResult(roleKey, scores);
+                });
+            });
+        }
+
+        // Display roadmap for a role
+        function displayRoadmap(roleKey) {
+            roadmapContainer.classList.remove('hidden');
+            roadmapContent.innerHTML = `
+                <div class="mb-6 text-center">
+                    <h3 class="text-xl font-semibold ${roles[roleKey].color}">${roles[roleKey].name} Roadmap</h3>
+                    <p class="text-slate-400">Follow this 30-day plan to build foundational skills</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${roadmaps[roleKey].map((day, index) => `
+                        <div class="bg-slate-700 p-4 rounded-lg option-card">
+                            <div class="font-semibold text-cyan-400 mb-1">${day.split(':')[0]}</div>
+                            <div class="text-slate-300">${day.split(':').slice(1).join(':')}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mt-6 text-center">
+                    <p class="text-slate-400 text-sm">Continue learning with hands-on practice and real-world projects after completing this roadmap.</p>
+                </div>
+            `;
+            
+            // Scroll to roadmap
+            roadmapContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Restart the quiz
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = [];
+            userName = '';
+            
+            // Hide results section, show name section
+            resultsSection.classList.add('hidden');
+            roadmapContainer.classList.add('hidden');
+            nameSection.classList.remove('hidden');
+            
+            // Reset name input
+            nameInput.value = '';
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', initQuiz);
+        prevBtn.addEventListener('click', prevQuestion);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // Allow Enter key to start quiz
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                initQuiz();
+            }
+        });
+    </script>
+</body>
+</html>
